@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -18,7 +19,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function() {
     return response()->json([
         'status' => false,
-        'message' => 'Access not allowed!!!'
+        'message' => 'Please log in first!!!'
     ], 401);
 })->name('login');
 
@@ -32,3 +33,7 @@ Route::middleware(['auth', 'jwt.verify'])->get('/refresh-token', [AuthController
 
 Route::post('register', [AuthController::class,'regUse']);
 Route::post('login', [AuthController::class,'logUse']);
+
+Route::middleware(['auth', 'jwt.verify'])->group(function () {
+    Route::apiResource('users', UserController::class);
+});

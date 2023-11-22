@@ -39,9 +39,9 @@ class AuthController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'status' => false,
-                'message' => 'Proses validasi gagal!!!',
+                'message' => 'Validation failed!!!',
                 'data' =>  $validator->errors()
-            ], 401);
+            ], 405);
         }
 
         $user = new User();
@@ -57,7 +57,7 @@ class AuthController extends Controller
 
         return response()->json([
             'status' => true,
-            'message' => 'Registrasi berhasil, silahkan login!!!'
+            'message' => 'Registration has been successfully, please login!!!'
         ], 200);
     }
 
@@ -72,15 +72,15 @@ class AuthController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'status' => false,
-                'message' => 'Proses validasi gagal!!!',
+                'message' => 'Validation failed!!!',
                 'data' =>  $validator->errors()
-            ], 401);
+            ], 405);
         }
 
         if (!$token = Auth::attempt($request->only(['email', 'password']))) {
             return response()->json([
                 'status' => false,
-                'message' => 'Akun yang dimasukkan tidak sesuai...'
+                'message' => "Account isn't same..."
             ], 401);
         }
 
