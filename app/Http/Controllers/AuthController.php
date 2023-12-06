@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\ResponseFormatter;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -11,21 +12,21 @@ use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
-    protected function createToken($token)
-    {
-        return response()->json([
-            'access_token' => $token,
-            'token_type' => 'bearer',
-            'expires_in' => auth()->factory()->getTTL() * 30,
-            'user' => auth()->user()
-        ]);
-    }
+    // protected function createToken($token)
+    // {
+    //     return response()->json([
+    //         'access_token' => $token,
+    //         'token_type' => 'bearer',
+    //         'expires_in' => auth()->factory()->getTTL() * 30,
+    //         'user' => auth()->user()
+    //     ]);
+    // }
 
-    public function refreshToken()
-    {
-        $token = auth()->refresh();
-        return $this->createToken($token);
-    }
+    // public function refreshToken()
+    // {
+    //     $newToken = auth()->refresh();
+    //     return $this->createToken($newToken);
+    // }
 
     public function regUse(Request $request)
     {
@@ -37,11 +38,7 @@ class AuthController extends Controller
         $validator = Validator::make($request->all(), $rules);
 
         if ($validator->fails()) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Validation failed!!!',
-                'data' =>  $validator->errors()
-            ], 405);
+            return ResponseFormatter::error('', $validator->errors());
         }
 
         $user = new User();
@@ -55,10 +52,7 @@ class AuthController extends Controller
             'role_id' => 1,
         ]);
 
-        return response()->json([
-            'status' => true,
-            'message' => 'Registration has been successfully, please login!!!'
-        ], 200);
+        return ResponseFormatter::success($user, 'Registration has been successfully, please login!!!');
     }
 
     public function logUse(Request $request)
@@ -70,11 +64,7 @@ class AuthController extends Controller
         $validator = Validator::make($request->all(), $rules);
 
         if ($validator->fails()) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Validation failed!!!',
-                'data' =>  $validator->errors()
-            ], 405);
+            return ResponseFormatter::error('', $validator->errors());
         }
 
         if (!$token = Auth::attempt($request->only(['email', 'password']))) {

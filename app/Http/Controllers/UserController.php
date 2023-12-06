@@ -131,7 +131,7 @@ class UserController extends Controller
         DB::table('role_user')
             ->where('user_id', $data->id)
             ->delete();
-        
+
             DB::table('role_user')->insert([
                 'user_id' => $user->id,
                 'role_id' => $roleId,
