@@ -1,9 +1,10 @@
 <?php
 
-use App\Http\Controllers\AuthController;
-use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\GalleryController;
 
 /*
 |--------------------------------------------------------------------------
@@ -30,6 +31,8 @@ Route::middleware(['auth', 'jwt.verify', 'role:admin'])->get('/user', function (
     return $request->user();
 });
 Route::middleware(['auth', 'jwt.verify'])->get('/refresh-token', [AuthController::class, 'refreshToken']);
+
+Route::get('gallery/get-list', [GalleryController::class, 'getList']);
 
 Route::post('register', [AuthController::class,'regUse']);
 Route::post('login', [AuthController::class,'logUse']);
