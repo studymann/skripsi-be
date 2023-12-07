@@ -37,10 +37,11 @@ Route::middleware(['auth', 'jwt.verify'])->get('/refresh-token', [AuthController
 Route::get('gallery/get-list', [GalleryController::class, 'getList']);
 Route::get('level/get-list', [LevelController::class, 'getList']);
 
-Route::post('register', [AuthController::class,'regUse']);
-Route::post('login', [AuthController::class,'logUse']);
+Route::post('register', [AuthController::class,'regUser']);
+Route::post('login', [AuthController::class,'logUser']);
 
 Route::middleware(['auth', 'jwt.verify'])->group(function () {
     Route::apiResource('users', UserController::class);
-    Route::apiResource('gallery', GalleryController::class);
+    // Route::apiResource('gallery', GalleryController::class);
+    Route::post('gallery', [GalleryController::class, 'store']);
 });

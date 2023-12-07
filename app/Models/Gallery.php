@@ -17,7 +17,7 @@ class Gallery extends Model
     protected $primaryKey = 'id';
     public $incrementing = false;
     protected $fillable = [
-        'tittle', 'description', 'image'
+        'title', 'description', 'image'
     ];
 
 

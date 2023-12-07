@@ -65,7 +65,7 @@ class GalleryController extends Controller
     public function show(Request $request)
     {
         $id = $request->get('id');
-        $gallery = Gallery::findOrFail($id);
+        $gallery = Gallery::where('id', $id)->first();
 
         if (!$gallery) {
             return ResponseFormatter::error('', 'Data Tidak Ditemukan');
@@ -100,9 +100,9 @@ class GalleryController extends Controller
             return ResponseFormatter::error('', $validator->errors());
         }
 
-        try {
+        // try {
             DB::transaction(function () use ($request, &$galleries) {
-                $tittle = $request->get('tittle');
+                $title = $request->get('title');
                 $description = $request->get('description');
                 $file = $request->file('image');
 
@@ -120,7 +120,7 @@ class GalleryController extends Controller
                 $image->save(public_path() . '/' . env('UPLOADS_DIRECTORY') . '/' . $imageFileName, 90, 'webp');
 
                 $galleries = Gallery::create([
-                    'tittle' => $tittle,
+                    'title' => $title,
                     'description' => $description,
                     'image' => $imageFileName,
                 ]);
@@ -130,9 +130,9 @@ class GalleryController extends Controller
             } else {
                 return ResponseFormatter::error('', 'Data Gagal Disimpan');
             }
-        } catch (\Exception $e) {
-            return ResponseFormatter::error('', 'Terjadi Kesalahan Sistem');
-        }
+        // } catch (\Exception $e) {
+        //     return ResponseFormatter::error('', 'Terjadi Kesalahan Sistem');
+        // }
     }
 
     public function edit()
@@ -144,7 +144,7 @@ class GalleryController extends Controller
     {
         //rules
         $rules = [
-            'tittle' => 'required|string',
+            'title' => 'required|string',
             'description' => 'required|string',
             'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
         ];
@@ -174,7 +174,7 @@ class GalleryController extends Controller
                     return ResponseFormatter::error('', 'Image Tidak Terhapus');
                 }
 
-                $tittle = $request->get('tittle');
+                $title = $request->get('title');
                 $description = $request->get('description');
                 $file = $request->file('image');
                 // Manipulasi gambar menggunakan Intervention Image
@@ -189,7 +189,7 @@ class GalleryController extends Controller
                 $image->save(public_path() . '/' . env('UPLOADS_DIRECTORY') . '/' . $imageFileName, 90, 'webp');
 
                 $galleries = $gallery->update([
-                    'tittle' => $tittle,
+                    'title' => $title,
                     'description' => $description,
                     // 'category_id' => $category_id,
                     'image' => $imageFileName
