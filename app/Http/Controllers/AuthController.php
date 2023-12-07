@@ -35,10 +35,10 @@ class AuthController extends Controller
         $user->password = Hash::make($request->password);
         $user->save();
 
-        $role = Role::where('name', 'Admin')->first();
+        $role = Role::where('name', 'admin')->first();
         DB::table('role_user')->insert([
             'user_id' => $user->id,
-            'role_id' => $role,
+            'role_id' => $role->id,
         ]);
 
         return ResponseFormatter::success($user, 'Registration has been successfully, please login!!!');

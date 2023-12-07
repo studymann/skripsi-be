@@ -42,6 +42,10 @@ Route::post('login', [AuthController::class,'logUser']);
 
 Route::middleware(['auth', 'jwt.verify'])->group(function () {
     Route::apiResource('users', UserController::class);
-    // Route::apiResource('gallery', GalleryController::class);
+
+
+    //gallery//
+    Route::apiResource('gallery', GalleryController::class);
+    //store
     Route::post('gallery', [GalleryController::class, 'store']);
 });
