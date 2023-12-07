@@ -2,52 +2,106 @@
 
 namespace App\Http\Controllers;
 
-use App\Helpers\ResponseFormatter;
 use App\Models\User;
+// use App\Helpers\EncodeFile;
 use Illuminate\Http\Request;
+use App\Helpers\PaginationHelper;
+use App\Helpers\ResponseFormatter;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
 
+use Illuminate\Support\Facades\Hash;
 use function PHPUnit\Framework\isEmpty;
+use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function getList()
+    public function getList(Request $request)
     {
-        $data = User::all([
-            'id',
-            'name',
-            'email',
-        ]);
-        if (isEmpty($data)) {
-            return ResponseFormatter::error('', 'Data Belum Ada');
+        $perPage = $request->get('per_page', 10);
+        $page = $request->get('page', 1);
+
+        if ($perPage === 'bypass' || $page === 'bypass') {
+            // Jika per_page bernilai "bypass", gunakan metode bypass
+            $users = User::all();
+            $total = $users->count();
+            $data = $users->map(function ($user) {
+                return [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'role' => $user->roles->map(function ($role) {
+                        return [
+                            'id' => $role->id,
+                            'name' => $role->name
+                        ];
+                    })
+                ];
+            });
+        } else {
+            // Jika per_page memiliki nilai selain "bypass", gunakan paginasi
+            $paginator = User::paginate($perPage, ['*'], 'page', $page);
+            $users = $paginator->items();
+            $data = collect($users)->map(function ($user) {
+                return [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'role' => $user->roles->map(function ($role) {
+                        return [
+                            'id' => $role->id,
+                            'name' => $role->name
+                        ];
+                    })
+                ];
+            });
+            $total = $paginator->total();
         }
-        return ResponseFormatter::success($data, 'Data Berhasil Dimuat');
+
+        $nextPageUrl = $perPage === 'bypass' || $page === 'bypass' ? null : PaginationHelper::getNextPageUrl($request, $page, $perPage, $total);
+        $prevPageUrl = $perPage === 'bypass' || $page === 'bypass' ? null : PaginationHelper::getPrevPageUrl($request, $page, $perPage);
+
+        return ResponseFormatter::success([
+            'current_page' => (int)$page,
+            'data' => $data,
+            'next_page_url' => $nextPageUrl,
+            'path' => $request->url(),
+            'per_page' => (int)$perPage,
+            'prev_page_url' => $prevPageUrl,
+            'to' => (int)$page * (int)$perPage,
+            'total' => (int)$total,
+        ], 'Berhasil Menampilkan Data User');
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(User $user)
+    public function show(Request $request)
     {
         try {
-            $data = User::findOrFail($user->id);
+            $user = User::findOrFail($request->get('id'));
+            if ($user) {
+                $data = [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'role' => $user->roles->map(function ($role) {
+                        return [
+                            'id' => $role->id,
+                            'name' => $role->name
+                        ];
+                    }),
+                ];
 
-            return response()->json([
-                'status' => true,
-                'message' => 'Detail data user',
-                'payload' => $data
-            ], 200);
+                return ResponseFormatter::success($data, 'Data User Berhasil');
+            } else {
+                return ResponseFormatter::error('', 'Data User Gagal');
+            }
+
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-            return response()->json([
-                'status' => false,
-                'error' => 'User not found!!!',
-                'message' => $e->getMessage()
-            ], 404);
+            return ResponseFormatter::error('', 'Kesalahan Pada Sistem');
         }
     }
 

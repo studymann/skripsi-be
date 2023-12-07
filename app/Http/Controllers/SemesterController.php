@@ -2,15 +2,20 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Package;
+use App\Models\Semester;
 use Illuminate\Http\Request;
 use App\Helpers\PaginationHelper;
 use App\Helpers\ResponseFormatter;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use App\Http\Requests\StoreSemesterRequest;
+use App\Http\Requests\UpdateSemesterRequest;
 
-class PackageController extends Controller
+class SemesterController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     */
     public function getList(Request $request)
     {
         $perPage = $request->get('per_page', 10);
@@ -18,22 +23,22 @@ class PackageController extends Controller
 
         if ($perPage === 'bypass' || $page === 'bypass') {
             // Jika per_page bernilai "bypass", gunakan metode bypass
-            $packages = Package::all();
-            $total = $packages->count();
-            $data = $packages->map(function ($package) {
+            $semesters = Semester::all();
+            $total = $semesters->count();
+            $data = $semesters->map(function ($semester) {
                 return [
-                    'id' => $package->id,
-                    'name' => $package->name,
+                    'id' => $semester->id,
+                    'name' => $semester->name,
                 ];
             });
         } else {
             // Jika per_page memiliki nilai selain "bypass", gunakan paginasi
-            $paginator = Package::paginate($perPage, ['*'], 'page', $page);
-            $packages = $paginator->items();
-            $data = collect($packages)->map(function ($package) {
+            $paginator = Semester::paginate($perPage, ['*'], 'page', $page);
+            $semesters = $paginator->items();
+            $data = collect($semesters)->map(function ($semester) {
                 return [
-                    'id' => $package->id,
-                    'name' => $package->name,
+                    'id' => $semester->id,
+                    'name' => $semester->name,
                 ];
             });
             $total = $paginator->total();
@@ -51,17 +56,17 @@ class PackageController extends Controller
             'prev_page_url' => $prevPageUrl,
             'to' => (int)$page * (int)$perPage,
             'total' => (int)$total,
-        ], 'Berhasil Menampilkan Data package');
+        ], 'Berhasil Menampilkan Data semester');
     }
 
     public function show(Request $request)
     {
-        $package = Package::findOrFail($request->get('id'));
+        $semester = Semester::findOrFail($request->get('id'));
 
-        if ($package) {
+        if ($semester) {
             $data = [
-                'id' => $package->id,
-                'name' => $package->name
+                'id' => $semester->id,
+                'name' => $semester->name
             ];
 
             return ResponseFormatter::success($data, 'Data Berhasil');
@@ -83,13 +88,13 @@ class PackageController extends Controller
         }
 
         try {
-            DB::transaction(function () use ($request, &$packages) {
-                $packages = Package::create([
+            DB::transaction(function () use ($request, &$semesters) {
+                $semesters = Semester::create([
                     'name' => $request->get('name'),
                 ]);
             });
-            if ($packages) {
-                return ResponseFormatter::success($packages, 'Data Berhasil Disimpan');
+            if ($semesters) {
+                return ResponseFormatter::success($semesters, 'Data Berhasil Disimpan');
             } else {
                 return ResponseFormatter::error('', 'Data Gagal Disimpan');
             }
@@ -100,10 +105,10 @@ class PackageController extends Controller
 
     public function edit(Request $request)
     {
-        $package = Package::findOrFail($request->get('id'));
+        $semester = Semester::findOrFail($request->get('id'));
 
-        if ($package) {
-            return ResponseFormatter::success($package, 'Data Siap Diedit');
+        if ($semester) {
+            return ResponseFormatter::success($semester, 'Data Siap Diedit');
         } else {
             return ResponseFormatter::error('', 'Data Tidak Ditemukan');
         }
@@ -122,14 +127,14 @@ class PackageController extends Controller
         }
 
         try {
-            DB::transaction(function () use ($request, &$packages) {
-                $package = Package::findOrFail($request->get('id'));
-                $packages = $package->update([
+            DB::transaction(function () use ($request, &$semesters) {
+                $semester = Semester::findOrFail($request->get('id'));
+                $semesters = $semester->update([
                     'name' => $request->get('name')
                 ]);
             });
-            if ($packages) {
-                return ResponseFormatter::success($packages, 'Data Berhasil Terupdate');
+            if ($semesters) {
+                return ResponseFormatter::success($semesters, 'Data Berhasil Terupdate');
             } else {
                 return ResponseFormatter::error('', 'Data Gagal Disimpan');
             }
@@ -140,10 +145,10 @@ class PackageController extends Controller
 
     public function destroy(Request $request)
     {
-        $package = Package::findOrFail($request->get('id'));
+        $semester = Semester::findOrFail($request->get('id'));
 
-        if ($package) {
-            $package->delete();
+        if ($semester) {
+            $semester->delete();
 
             return ResponseFormatter::success('' , 'Data Berhasil Dihapus');
         } else {

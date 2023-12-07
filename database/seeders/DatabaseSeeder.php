@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
             PackageSeeder::class,
             LevelSeeder::class,
             GallerySeeder::class,
+            SemesterSeeder::class,
         ]);
     }
 }
