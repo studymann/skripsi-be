@@ -14,18 +14,6 @@ class PackageSeeder extends Seeder
      */
     public function run(): void
     {
-        // $packages = [];
-        // for ($a = 1; $a <= 12; $a++ ) {
-        //     if ($a <= 6 ) {
-        //         $packages['name'] = "A";
-        //     } else if ($a > 6 && $a <= 9) {
-        //         $packages['name'] = "B";
-        //     } else if ($a > 9 && $a <= 12) {
-        //         $packages['name'] = "C";
-        //     }
-        //     Package::create($level);
-        // }
-
         $datas = [
             ['name' => 'A'],
             ['name' => 'B'],

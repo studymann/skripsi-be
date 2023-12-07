@@ -16,7 +16,6 @@ class LevelSeeder extends Seeder
     {
         $level = [];
         for ($a = 1; $a <= 12; $a++ ) {
-            // $level['name'] = $a;
             if ($a <= 6 ) {
                 $package = Package::where('name', 'A')->first();
                 $level['package_id'] = $package->id;
