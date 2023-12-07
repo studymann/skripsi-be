@@ -41,6 +41,9 @@ Route::post('register', [AuthController::class,'regUser']);
 Route::post('login', [AuthController::class,'logUser']);
 
 Route::middleware(['auth', 'jwt.verify'])->group(function () {
+    Route::get('get-token-info', [AuthController::class, 'getTokenInfo']);
+    Route::get('refresh-token', [AuthController::class, 'refreshToken']);
+
     Route::apiResource('users', UserController::class);
 
 

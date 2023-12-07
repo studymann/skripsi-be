@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Helpers\ResponseFormatter;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\Request;
+use App\Helpers\ResponseFormatter;
 use Illuminate\Support\Facades\DB;
+use Tymon\JWTAuth\Facades\JWTAuth;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -64,6 +65,55 @@ class AuthController extends Controller
         return $this->createToken($token);
     }
 
+    public function logout(Request $request)
+    {
+        try {
+            $token = JWTAuth::getToken(); // Mendapatkan token dari permintaan
+            JWTAuth::invalidate($token); // Mematikan token
+
+            return ResponseFormatter::success('', 'Logout Berhasil');
+        } catch (\Exception $exception) {
+            return ResponseFormatter::error('', 'Terjadi Kesalahan sistem', 500);
+        }
+    }
+
+    public function getTokenInfo()
+    {
+        // Dapatkan user yang di-authenticated saat ini
+        $user = Auth::user();
+
+        // Buat token untuk user
+        $token = JWTAuth::fromUser($user);
+
+       return ResponseFormatter::success([
+           'access_token' => $token,
+           'token_type' => 'bearer',
+           'expires_in' => JWTAuth::factory()->getTTL() * 60,
+           'user' => $user
+       ], 'Token Berhasil Diperoleh!');
+    }
+
+    public function refreshToken()
+    {
+        try {
+            // Coba refresh token
+            $token = JWTAuth::refresh(JWTAuth::getToken());
+
+            // Dapatkan user terkini setelah refresh token
+            $user = Auth::user();
+
+            return ResponseFormatter::success([
+                'access_token' => $token,
+                'token_type' => 'bearer',
+                'expires_in' => JWTAuth::factory()->getTTL() * 60,
+                'user' => $user,
+            ], 'Token Berhasil Diperbaharui!');
+        } catch (\Exception $e) {
+            // Tangkap dan tangani eksepsi jika ada kesalahan dalam menyegarkan token
+            return ResponseFormatter::error(null, 'Gagal menyegarkan token', 401);
+        }
+    }
+
     protected function createToken($token)
     {
         return ResponseFormatter::success([
@@ -73,4 +123,6 @@ class AuthController extends Controller
             'user' => Auth::user(),
         ], 'Login Success');
     }
+
+
 }

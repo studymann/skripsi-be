@@ -2,29 +2,31 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\ResponseFormatter;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
+use function PHPUnit\Framework\isEmpty;
+
 class UserController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function getList()
     {
         $data = User::all([
             'id',
             'name',
             'email',
         ]);
-        return response()->json([
-            'status' => true,
-            'message' => 'All data users',
-            'payload' => $data
-        ], 200);
+        if (isEmpty($data)) {
+            return ResponseFormatter::error('', 'Data Belum Ada');
+        }
+        return ResponseFormatter::success($data, 'Data Berhasil Dimuat');
     }
 
     /**
