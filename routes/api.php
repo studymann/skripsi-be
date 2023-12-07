@@ -1,9 +1,11 @@
 <?php
 
+use App\Models\Gallery;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\LevelController;
 use App\Http\Controllers\GalleryController;
 
 /*
@@ -33,10 +35,12 @@ Route::middleware(['auth', 'jwt.verify', 'role:admin'])->get('/user', function (
 Route::middleware(['auth', 'jwt.verify'])->get('/refresh-token', [AuthController::class, 'refreshToken']);
 
 Route::get('gallery/get-list', [GalleryController::class, 'getList']);
+Route::get('level/get-list', [LevelController::class, 'getList']);
 
 Route::post('register', [AuthController::class,'regUse']);
 Route::post('login', [AuthController::class,'logUse']);
 
 Route::middleware(['auth', 'jwt.verify'])->group(function () {
     Route::apiResource('users', UserController::class);
+    Route::apiResource('gallery', GalleryController::class);
 });
