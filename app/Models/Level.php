@@ -21,7 +21,7 @@ class Level extends Model
 
     public function classes()
     {
-        // return $this->belongsTo(Gallery::class);
+        return $this->belongsTo(Classes::class);
     }
 
     public function package()

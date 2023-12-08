@@ -100,7 +100,7 @@ class GalleryController extends Controller
             return ResponseFormatter::error('', $validator->errors());
         }
 
-        // try {
+        try {
             DB::transaction(function () use ($request, &$galleries) {
                 $title = $request->get('title');
                 $description = $request->get('description');
@@ -130,9 +130,9 @@ class GalleryController extends Controller
             } else {
                 return ResponseFormatter::error('', 'Data Gagal Disimpan');
             }
-        // } catch (\Exception $e) {
-        //     return ResponseFormatter::error('', 'Terjadi Kesalahan Sistem');
-        // }
+        } catch (\Exception $e) {
+            return ResponseFormatter::error('', 'Terjadi Kesalahan Sistem');
+        }
     }
 
     public function edit()

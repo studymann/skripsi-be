@@ -23,4 +23,9 @@ class Package extends Model
     {
         return $this->belongsTo(Level::class);
     }
+
+    public function classes()
+    {
+        return $this->belongsTo(Classes::class);
+    }
 }

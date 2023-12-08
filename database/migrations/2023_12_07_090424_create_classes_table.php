@@ -17,7 +17,7 @@ return new class extends Migration
             $table->uuid('package_id');
             $table->uuid('level_id');
             $table->uuid('semester_id');
-            $table->string('year');
+            $table->integer('year');
             $table->softDeletes();
             $table->timestamps();
 

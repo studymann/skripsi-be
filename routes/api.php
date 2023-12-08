@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\LevelController;
+use App\Http\Controllers\ClassesController;
 use App\Http\Controllers\GalleryController;
 use App\Http\Controllers\PackageController;
 use App\Http\Controllers\SemesterController;
@@ -42,6 +43,7 @@ Route::get('gallery/get-list', [GalleryController::class, 'getList']);
 Route::get('level/get-list', [LevelController::class, 'getList']);
 Route::get('package/get-list', [PackageController::class, 'getList']);
 Route::get('semester/get-list', [SemesterController::class, 'getList']);
+Route::get('class/get-list', [ClassesController::class, 'getList']);
 
 
 //auth
@@ -60,6 +62,9 @@ Route::middleware(['auth', 'jwt.verify'])->group(function () {
 
     //gallery//
     Route::apiResource('gallery', GalleryController::class);
-    //store
     Route::post('gallery', [GalleryController::class, 'store']);
+
+    //class//
+    Route::resource('class', ClassesController::class);
+
 });
